@@ -6,7 +6,7 @@ Official bot: [@maigret_osint_bot](http://t.me/maigret_osint_bot)
 
 ## Requirements
 
-- Python 3.6+ and pip is required.
+- Python 3.10+ and pip is required.
 - `pip3 install -r requirements.txt`
 - [Register Telegram application](https://core.telegram.org/api/obtaining_api_id) to get API_ID and API_HASH.
 - [Create a new bot](https://core.telegram.org/bots#6-botfather), get a token and use it on first script launch. 
