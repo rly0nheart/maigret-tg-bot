@@ -12,8 +12,8 @@ from maigret.sites import MaigretDatabase
 from maigret.report import save_pdf_report, generate_report_context
 from telethon.sync import TelegramClient, events
 
-API_ID = [REDACTED]  # os.getenv('API_ID')
-API_HASH = "[REDACTED]"  # os.getenv('API_HASH')
+API_ID = os.getenv('API_ID')
+API_HASH = os.getenv('API_HASH')
 
 MAIGRET_DB_FILE = 'data.json'  # wget https://raw.githubusercontent.com/soxoj/maigret/main/maigret/resources/data.json
 COOKIES_FILE = "cookies.txt"  # wget https://raw.githubusercontent.com/soxoj/maigret/main/cookies.txt
