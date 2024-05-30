@@ -1,9 +1,9 @@
 import getpass
 import logging
 import os
+from queue import Queue
 import re
 from threading import Thread
-from queue import Queue
 
 import asyncio
 import maigret
