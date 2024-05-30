@@ -12,9 +12,8 @@ from maigret.sites import MaigretDatabase
 from maigret.report import save_pdf_report, generate_report_context
 from telethon.sync import TelegramClient, events
 
-
-API_ID = int(os.getenv('API_ID'))
-API_HASH = os.getenv('API_HASH')
+API_ID = [REDACTED]  # os.getenv('API_ID')
+API_HASH = "[REDACTED]"  # os.getenv('API_HASH')
 
 MAIGRET_DB_FILE = 'data.json'  # wget https://raw.githubusercontent.com/soxoj/maigret/main/maigret/resources/data.json
 COOKIES_FILE = "cookies.txt"  # wget https://raw.githubusercontent.com/soxoj/maigret/main/cookies.txt
@@ -129,6 +128,14 @@ async def handle_event(event, client):
     msg = event.message.message
     bot_logger.info(f'Got a message: {msg}')
 
+    # Handle the /start command
+    if msg == '/start':
+        sender = await event.get_sender()
+        username = sender.first_name if sender.first_name else "there"
+        await event.reply(f'Hello, {username}! Welcome to the Maigret bot. '
+                          f'Please reply with a target\'s username to begin lookup.')
+        return
+
     # checking for username format
     msg = msg.lstrip('@')
     username_regexp = re.search(USERNAME_REGEXP, msg)
@@ -159,6 +166,7 @@ async def handle_event(event, client):
                 if os.path.isfile(filename):
                     async with client.action(event.from_id, 'document') as action:
                         await client.send_file(event.from_id, filename, progress_callback=action.progress)
+                        os.remove(filename)
             except Exception as e:
                 bot_logger.error(e, exc_info=True)
                 await event.reply('Unexpected error has been occurred. '
@@ -190,7 +198,7 @@ if __name__ == '__main__':
         @tg_client.on(events.NewMessage())
         async def handler(event):
             request_queue.put(event)
-            await event.reply('Your request has been added to the queue. Please wait for the response...')
+            # await event.reply('Your request has been added to the queue. Please wait for the response...')
 
         # Start a background thread to process the queue
         event_loop = asyncio.get_event_loop()
