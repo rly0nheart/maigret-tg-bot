@@ -17,7 +17,7 @@ API_HASH = os.getenv('API_HASH')
 
 MAIGRET_DB_FILE = 'data.json'  # wget https://raw.githubusercontent.com/soxoj/maigret/main/maigret/resources/data.json
 COOKIES_FILE = "cookies.txt"  # wget https://raw.githubusercontent.com/soxoj/maigret/main/cookies.txt
-id_type = "username"
+ID_TYPE = "username"
 USERNAME_REGEXP = r'^[a-zA-Z0-9-_\.]{5,}$'
 ADMIN_USERNAME = '@soxoj'
 
@@ -26,17 +26,17 @@ TOP_SITES_COUNT = 1500
 # Maigret HTTP requests timeout
 TIMEOUT = 30
 
-# Create a queue to hold user requests
-request_queue = Queue()
+# Create a queue to hold a maximum of 10 user requests
+request_queue = Queue(maxsize=10)
 
 
 def setup_logger(log_level, name):
+    logging.basicConfig(
+        format='[%(filename)s:%(lineno)d] %(levelname)-3s %(asctime)s %(message)s',
+        datefmt='%H:%M:%S',
+        level=log_level,
+    )
     logger = logging.getLogger(name)
-    logger.setLevel(log_level)
-    log_handler = logging.StreamHandler()
-    log_handler.setFormatter(logging.Formatter('[%(filename)s:%(lineno)d] %(levelname)-3s '
-                                               '%(asctime)s %(message)s', datefmt='%H:%M:%S'))
-    logger.addHandler(log_handler)
     return logger
 
 
@@ -54,7 +54,7 @@ async def maigret_search(username):
                                    site_dict=sites,
                                    timeout=TIMEOUT,
                                    logger=logger,
-                                   id_type=id_type,
+                                   id_type=ID_TYPE,
                                    cookies=COOKIES_FILE,
                                    )
     return results
@@ -99,7 +99,7 @@ async def search(username):
         return ['An error occurred, send username once again.'], []
 
     found_exact_accounts = []
-    general_results = [(username, id_type, results)]
+    general_results = [(username, ID_TYPE, results)]
     report_context = generate_report_context(general_results)
     save_pdf_report(f"{username}_report.pdf", report_context)
 
@@ -166,6 +166,8 @@ async def handle_event(event, client):
                 if os.path.isfile(filename):
                     async with client.action(event.from_id, 'document') as action:
                         await client.send_file(event.from_id, filename, progress_callback=action.progress)
+
+                        # Delete the generated file after it gets sent.
                         os.remove(filename)
             except Exception as e:
                 bot_logger.error(e, exc_info=True)
@@ -185,12 +187,6 @@ def process_queue(client, loop):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        format='[%(filename)s:%(lineno)d] %(levelname)-3s  %(asctime)s      %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.INFO,
-    )
-
     bot_logger = setup_logger(logging.INFO, 'maigret-bot')
     bot_logger.info('I am started.')
 
