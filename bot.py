@@ -30,7 +30,7 @@ TIMEOUT = 30
 request_queue = Queue(maxsize=10)
 
 
-def setup_logger(log_level, name):
+def setup_logger(name, log_level=logging.NOTSET):
     logging.basicConfig(
         format='[%(filename)s:%(lineno)d] %(levelname)-3s %(asctime)s %(message)s',
         datefmt='%H:%M:%S',
