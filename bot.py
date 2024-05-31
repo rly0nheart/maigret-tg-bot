@@ -44,7 +44,7 @@ async def maigret_search(username):
     """
         Main Maigret search function
     """
-    logger = setup_logger(logging.WARNING, 'maigret')
+    logger = setup_logger(name='maigret', log_level=logging.WARNING)
 
     db = MaigretDatabase().load_from_path(MAIGRET_DB_FILE)
 
@@ -187,7 +187,7 @@ def process_queue(client, loop):
 
 
 if __name__ == '__main__':
-    bot_logger = setup_logger(logging.INFO, 'maigret-bot')
+    bot_logger = setup_logger(name='maigret-bot', log_level=logging.INFO)
     bot_logger.info('I am started.')
 
     with TelegramClient(getpass.getuser(), API_ID, API_HASH) as tg_client:
